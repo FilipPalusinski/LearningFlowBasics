@@ -3,9 +3,7 @@ package com.example.learningflowbasics
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class MainViewModel: ViewModel() {
@@ -26,9 +24,23 @@ class MainViewModel: ViewModel() {
     }
 
     private fun collectFlow() {
+//        countDownFlow
+//            .onEach {
+//                println(it)
+//            }.launchIn(viewModelScope)
         viewModelScope.launch {
-            countDownFlow.collectLatest { time ->
-                delay(1500L)
+            countDownFlow
+                .filter { time ->
+                    time % 2 == 0
+                }
+                .map { time ->
+                    time * time
+                }
+                .onEach { time ->
+                    println(time)
+
+                }
+                .collect { time ->
                 println("The current time is $time")
             }
         }
