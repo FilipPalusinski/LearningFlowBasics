@@ -23,8 +23,12 @@ class MainViewModel: ViewModel() {
 //        countOperator()
 //        reduceOperator()
 //       foldOperator()
-        flatteningOperator()
+//        flatteningOperator()
+//        bufferOperator()
+//        conflateOperator()
+        collectLatestOperator()
     }
+
 
     private fun countOperator() {
         viewModelScope.launch {
@@ -72,7 +76,75 @@ class MainViewModel: ViewModel() {
             }.collect { value ->
                 println("The value is $value")
             }
-
         }
     }
+
+    private fun bufferOperator() {
+        val flow = flow {
+            delay(250L)
+            emit("Appetizer")
+            delay(1000L)
+            emit("Main dish")
+            delay(100L)
+            emit("Dessert")
+        }
+
+        viewModelScope.launch {
+            flow.onEach {
+                println("FLOW: $it is delivered")
+            }
+                .buffer()
+                .collect {
+                    println("FLOW: Now eating $it")
+                    delay(1500L)
+                    println("FLOW: Finished eating $it")
+                }
+        }
+    }
+
+    private fun conflateOperator() {
+        val flow = flow {
+            delay(250L)
+            emit("Appetizer")
+            delay(1000L)
+            emit("Main dish")
+            delay(100L)
+            emit("Dessert")
+        }
+
+        viewModelScope.launch {
+            flow.onEach {
+                println("FLOW: $it is delivered")
+            }
+                .conflate()
+                .collect {
+                    println("FLOW: Now eating $it")
+                    delay(1500L)
+                    println("FLOW: Finished eating $it")
+                }
+        }
+    }
+
+    private fun collectLatestOperator() {
+        val flow = flow {
+            delay(250L)
+            emit("Appetizer")
+            delay(1000L)
+            emit("Main dish")
+            delay(100L)
+            emit("Dessert")
+        }
+
+        viewModelScope.launch {
+            flow.onEach {
+                println("FLOW: $it is delivered")
+            }
+                .collectLatest {
+                    println("FLOW: Now eating $it")
+                    delay(1500L)
+                    println("FLOW: Finished eating $it")
+                }
+        }
+    }
+
 }
