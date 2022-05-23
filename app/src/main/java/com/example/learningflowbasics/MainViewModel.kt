@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 class MainViewModel: ViewModel() {
 
     val countDownFlow = flow<Int> {
-        val startingValue = 10
+        val startingValue = 5
         var currentValue = startingValue
         emit(startingValue)
         while(currentValue > 0) {
@@ -20,29 +20,37 @@ class MainViewModel: ViewModel() {
     }
 
     init {
-        collectFlow()
+//        countOperator()
+//        reduceOperator()
+       foldOperator()
     }
 
-    private fun collectFlow() {
-//        countDownFlow
-//            .onEach {
-//                println(it)
-//            }.launchIn(viewModelScope)
+    private fun countOperator() {
         viewModelScope.launch {
-            countDownFlow
-                .filter { time ->
-                    time % 2 == 0
+            val count = countDownFlow
+                .count {
+                    it % 2 == 0
                 }
-                .map { time ->
-                    time * time
+            println("the count is $count")
+        }
+    }
+    private fun reduceOperator() {
+        viewModelScope.launch {
+            val reduceResult = countDownFlow
+                .reduce { accumulator, value ->
+                    accumulator + value
                 }
-                .onEach { time ->
-                    println(time)
+            println("the count is $reduceResult")
+        }
+    }
 
+    private fun foldOperator() {
+        viewModelScope.launch {
+            val reduceResult = countDownFlow
+                .fold(100) { accumulator, value ->
+                    accumulator + value
                 }
-                .collect { time ->
-                println("The current time is $time")
-            }
+            println("the count is $reduceResult")
         }
     }
 }
