@@ -22,7 +22,8 @@ class MainViewModel: ViewModel() {
     init {
 //        countOperator()
 //        reduceOperator()
-       foldOperator()
+//       foldOperator()
+        flatteningOperator()
     }
 
     private fun countOperator() {
@@ -34,6 +35,7 @@ class MainViewModel: ViewModel() {
             println("the count is $count")
         }
     }
+
     private fun reduceOperator() {
         viewModelScope.launch {
             val reduceResult = countDownFlow
@@ -51,6 +53,26 @@ class MainViewModel: ViewModel() {
                     accumulator + value
                 }
             println("the count is $reduceResult")
+        }
+    }
+    private fun flatteningOperator() {
+        val flow1 = flow {
+            emit(1)
+            delay(500L)
+            emit(2)
+        }
+
+        viewModelScope.launch {
+            flow1.flatMapConcat { value ->
+                flow {
+                    emit(value + 1)
+                    delay(500L)
+                    emit(value + 2)
+                }
+            }.collect { value ->
+                println("The value is $value")
+            }
+
         }
     }
 }
